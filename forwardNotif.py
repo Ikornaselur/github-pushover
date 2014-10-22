@@ -2,12 +2,13 @@
 
 from agithub import Github
 from datetime import timedelta, datetime 
+from os import path
 import httplib, urllib
 
 
-TOKEN_FILE = 'token'
-PUSHOVER_FILE = 'pushover'
-
+DIR_NAME = path.dirname(path.realpath(__file__))
+TOKEN_FILE = DIR_NAME + '/token'
+PUSHOVER_FILE = DIR_NAME + '/pushover'
 
 def read_values(file_name):
     with open(file_name) as f:
