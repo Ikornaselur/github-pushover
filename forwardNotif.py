@@ -52,6 +52,17 @@ def parse_message(reason, title):
     return title
 
 
+def parse_url(url):
+    parts = url.split('/')
+    if parts[-2] == 'pulls':
+        return "https://github.com/{}/{}/pull/{}".format(
+            parts[-4], parts[-3], parts[-1])
+    if parts[-2] == 'issues':
+        return "https://github.com/{}/{}/issues/{}".format(
+            parts[-4], parts[-3], parts[-1])
+    return url 
+
+
 def main():
     user, passwd = read_values(TOKEN_FILE)
     push_user_key, push_app_key = read_values(PUSHOVER_FILE)
@@ -64,8 +75,10 @@ def main():
         reason = notif['reason']
         title = notif['subject']['title']
         url = notif['subject']['url']
-        message = parse_message(reason, title)
-        push_message(push_user_key, push_app_key, 'Github', message, url)
+        ntype = notif['subject']['type']
+        url = parse_url(url)
+        push_message(push_user_key, push_app_key, 
+            "{} - {}".format(ntype, reason), title, url)
 
 
 if __name__ == '__main__':
