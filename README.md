@@ -1,4 +1,4 @@
-# Github Bullet
+# Github Pushover
 A simple layer between the Github API and Pushover API to forward github push messages to a device running Pushover.
 
 This script uses the [agithub library by Jonathan Paugh](https://github.com/jpaugh/agithub) for Github communication.
