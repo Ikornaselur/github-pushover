@@ -77,8 +77,9 @@ def main():
         url = notif['subject']['url']
         ntype = notif['subject']['type']
         url = parse_url(url)
+        repo = notif['repository']['full_name']
         push_message(push_user_key, push_app_key, 
-            "{} - {}".format(ntype, reason), title, url)
+            "{} - {}".format(ntype, reason), "{}\n{}".format(repo, title), url)
 
 
 if __name__ == '__main__':
