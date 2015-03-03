@@ -3,6 +3,7 @@
 from agithub import Github
 from datetime import timedelta, datetime 
 from os import path
+from json import dumps
 import httplib, urllib
 
 
@@ -71,15 +72,19 @@ def main():
     one_min_ago = (datetime.now() - timedelta(minutes=1)).strftime(
         "%Y-%m-%dT%H:%M:%SZ")
     notifications = get_notifications(one_min_ago, g)
-    for notif in notifications:
-        reason = notif['reason']
-        title = notif['subject']['title']
-        url = notif['subject']['url']
-        ntype = notif['subject']['type']
-        url = parse_url(url)
-        repo = notif['repository']['full_name']
-        push_message(push_user_key, push_app_key, 
-            "{} - {}".format(ntype, reason), "{}\n{}".format(repo, title), url)
+
+    # For testing purposes
+    with open('notifications.json', 'ab+') as log:
+        for notif in notifications:
+            log.write(dumps(notif, indent=2) + '\n')
+            reason = notif['reason']
+            title = notif['subject']['title']
+            url = notif['subject']['url']
+            ntype = notif['subject']['type']
+            url = parse_url(url)
+            repo = notif['repository']['full_name']
+            push_message(push_user_key, push_app_key,
+                "{} - {}".format(ntype, reason), "{}\n{}".format(repo, title), url)
 
 
 if __name__ == '__main__':
