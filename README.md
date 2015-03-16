@@ -8,7 +8,7 @@ This script needs two files by default, a `token` file and `pushover` file. They
 
 ### token
 ```
-<Github username>,<Github password or token with notifications access (recommended)>
+<Github username>,<Github password or token with notifications and repos access (recommended)>
 ```
 
 ### Pushover

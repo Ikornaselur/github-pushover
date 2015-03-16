@@ -41,16 +41,11 @@ def push_message(user_key, app_token, title, message, url):
     conn.getresponse()
 
 
-def parse_message(reason, title):
-    if reason == "mention" or reason == "team_mention":
-        return "You were mentioned in {}".format(title)
-    if reason == "assign":
-        return "You were assigned to {}".format(title)
-    if reason == "state_change":
-        return "State changed on {}".format(title)
-    if reason in ["subscribed", "manual", "comment"]:
-        return "New comment on {}".format(title)
-    return title
+def get_comment(comment_url, github):
+    comment = github.client.get(comment_url[comment_url.index('m/')+1:])
+    commenter = comment[1]['user']['login']
+    body = comment[1]['body']
+    return commenter, body
 
 
 def parse_url(url):
@@ -73,18 +68,20 @@ def main():
         "%Y-%m-%dT%H:%M:%SZ")
     notifications = get_notifications(one_min_ago, g)
 
-    # For testing purposes
-    with open('notifications.json', 'ab+') as log:
-        for notif in notifications:
-            log.write(dumps(notif, indent=2) + '\n')
-            reason = notif['reason']
-            title = notif['subject']['title']
-            url = notif['subject']['url']
-            ntype = notif['subject']['type']
-            url = parse_url(url)
-            repo = notif['repository']['full_name']
-            push_message(push_user_key, push_app_key,
-                "{} - {}".format(ntype, reason), "{}\n{}".format(repo, title), url)
+    for notif in notifications:
+        user, body = get_comment(notif['subject']['latest_comment_url'], g)
+        ntype = notif['subject']['type']
+        ntitle = notif['subject']['title']
+
+        notification = {
+            'title': '{user} commented on {ntype}: {ntitle}'.format(
+            user=user, ntype=ntype, ntitle=ntitle),
+            'body': body,
+            'url': parse_url(notif['subject']['url'])
+        };
+
+        push_message(push_user_key, push_app_key,
+            notification['title'], notification['body'], notification['url'])
 
 
 if __name__ == '__main__':
