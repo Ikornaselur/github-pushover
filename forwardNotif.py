@@ -28,15 +28,15 @@ def get_notifications(after, github):
         print "Error! Status was {}".format(status)
 
 
-def push_message(user_key, app_token, title, message, url):
+def push_message(user_key, app_token, notification):
     conn = httplib.HTTPSConnection("api.pushover.net:443")
     conn.request("POST", "/1/messages.json",
         urllib.urlencode({
             "token": app_token,
             "user": user_key,
-            "message": message,
-            "title": title,
-            "url": url
+            "message": notification['message'],
+            "title": notification['title'],
+            "url": notification['url']
         }), {"Content-type": "application/x-www-form-urlencoded"})
     conn.getresponse()
 
@@ -76,12 +76,11 @@ def main():
         notification = {
             'title': '{user} commented on {ntype}: {ntitle}'.format(
             user=user, ntype=ntype, ntitle=ntitle),
-            'body': body,
+            'message': body,
             'url': parse_url(notif['subject']['url'])
         };
 
-        push_message(push_user_key, push_app_key,
-            notification['title'], notification['body'], notification['url'])
+        push_message(push_user_key, push_app_key, notification)
 
 
 if __name__ == '__main__':
