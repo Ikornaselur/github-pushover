@@ -5,3 +5,4 @@ local
 token
 pushover
 notifications.json
+pause
